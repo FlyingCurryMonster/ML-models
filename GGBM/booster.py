@@ -4,7 +4,7 @@ from sklearn.base import BaseEstimator, RegressorMixin
 from objectives import Objective
 from callbacks import Callback
 
-class GradientBoosterRegressor(BaseEstimator, RegressorMixin):
+class GeneralizedGradBoostingRegressor(BaseEstimator, RegressorMixin):
 
     def __init__(self, base_learner, n_estimators, learning_rate=0.1,
                  objective: Objective=None, second_order=True, subsample=1.0,
