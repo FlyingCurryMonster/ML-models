@@ -11,6 +11,7 @@ class GradientBoosterRegressor(BaseEstimator, RegressorMixin):
                  random_state=None, callbacks: list[Callback]=None):
         
         assert subsample <=1.0 and subsample > 0.0, "subsample must be in (0.0, 1.0]"
+        assert objective is not None, "objective must be provided"
 
         self.base_learner = base_learner
         self.n_estimators = n_estimators
@@ -19,7 +20,7 @@ class GradientBoosterRegressor(BaseEstimator, RegressorMixin):
         self.second_order = second_order
         self.subsample = subsample
         self.random_state = random_state
-        self.callbacks = callbacks if callbacks is not None else [Callback]
+        self.callbacks = callbacks if callbacks is not None else []
         self._learners = []
     
     def fit(self, X, y, sample_weight=None, X_val=None, y_val=None):
