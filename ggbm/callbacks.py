@@ -1,6 +1,9 @@
-from typing import Protocol, Dict, Any
-from booster.booster import GradientBoosterRegressor
+from __future__ import annotations
+from typing import Protocol, Dict, Any, TYPE_CHECKING
 import numpy as np
+
+if TYPE_CHECKING:
+    from .booster import GeneralizedGradBoostingRegressor
 
 class Callback(Protocol):
     def on_iteration_end(self, booster: Any,
@@ -24,8 +27,8 @@ class EarlyStopping:
         else:
             return score > self.best_score + self.min_delta
         
-    def on_iteration_end(self, booster: GradientBoosterRegressor,
-                         iter_idx: int, evals: Dict[str, float]) -> None:
+    def on_iteration_end(self, booster: "GeneralizedGradBoostingRegressor",
+                         iter_idx: int, evals: Dict[str, float]) -> Dict[str, float]:
         y_pred = booster.predict(self.X_val)
         loss = booster.objective.loss(self.y_val, y_pred)
         evals[self.metric_name] = loss
