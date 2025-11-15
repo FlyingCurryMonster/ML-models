@@ -226,7 +226,7 @@ ax3.scatter(y_test, y_pred_ggbm, alpha=0.5, s=20, color='green')
 ax3.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'k--', lw=2)
 ax3.set_xlabel('True Values', fontsize=10)
 ax3.set_ylabel('Predictions', fontsize=10)
-ax3.set_title(f'Boosted Kernel Ridge ({N_ESTIMATORS} estimators)\nMSE={ggbm_mse:.2f}, R²={ggbm_r2:.4f}',
+ax3.set_title(f'Boosted Kernel Ridge (γ={GAMMA_WEAK}, {N_ESTIMATORS} est.)\nMSE={ggbm_mse:.2f}, R²={ggbm_r2:.4f}',
               fontsize=11)
 ax3.grid(True, alpha=0.3)
 
