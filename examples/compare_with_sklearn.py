@@ -213,9 +213,8 @@ ax6.set_title(f'Prediction Differences\nMean={pred_diff.mean():.6f}, Std={pred_d
 ax6.grid(True, alpha=0.3)
 
 plt.tight_layout()
-plt.savefig('examples/ggbm_sklearn_comparison.png', dpi=150, bbox_inches='tight')
+# plt.savefig('examples/ggbm_sklearn_comparison.png', dpi=150, bbox_inches='tight')
 print("Plot saved to: examples/ggbm_sklearn_comparison.png")
-plt.show()
 
 print("\n" + "="*70)
 print("CONCLUSION")
@@ -232,3 +231,6 @@ else:
 
 print("\nNote: Both gradient boosting methods should significantly outperform")
 print("the single decision tree baseline.")
+
+# Show plot last (this blocks until window is closed)
+plt.show()
