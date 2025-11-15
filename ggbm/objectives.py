@@ -5,8 +5,25 @@ class Objective:
     def init_prediction(self, y, sample_weight=None):
         """
         The initial prediction given a loss function.
-        e.g. MSE loss predicts the mean of the response
-        and MAE loss predicts the median of the response
+
+        Returns a scalar constant value that will be used as the initial
+        prediction for all samples.
+
+        Examples:
+        - MSE loss: returns the mean of the response
+        - MAE loss: returns the median of the response
+
+        Parameters
+        ----------
+        y : array-like
+            Target values
+        sample_weight : array-like, optional
+            Sample weights
+
+        Returns
+        -------
+        float
+            Scalar initial prediction value
         """
         raise NotImplementedError
     def loss(self, y_true, y_pred) -> float:    
@@ -26,10 +43,9 @@ class SquaredError(Objective):
 
     def init_prediction(self, y, sample_weight=None):
         if sample_weight is not None:
-            base = np.average(y, weights=sample_weight)
+            return np.average(y, weights=sample_weight)
         else:
-            base = y.mean()
-        return np.full_like(y, fill_value=base, dtype=np.float64)
+            return y.mean()
 
     def loss(self, y_true, y_pred, sample_weight=None) -> float:
         if sample_weight is not None:
@@ -49,10 +65,9 @@ class AbsoluteError(Objective):
     def init_prediction(self, y, sample_weight=None):
         if sample_weight is not None:
             # Weighted median is complex, use weighted mean as approximation
-            base = np.average(y, weights=sample_weight)
+            return np.average(y, weights=sample_weight)
         else:
-            base = np.median(y)
-        return np.full_like(y, fill_value=base, dtype=np.float64)
+            return np.median(y)
 
     def loss(self, y_true, y_pred, sample_weight=None) -> float:
         if sample_weight is not None:
@@ -85,13 +100,12 @@ class HuberLoss(Objective):
             Threshold at which to switch from quadratic to linear loss
         """
         self.delta = delta
-
+    
     def init_prediction(self, y, sample_weight=None):
         if sample_weight is not None:
-            base = np.average(y, weights=sample_weight)
+            return np.average(y, weights=sample_weight)
         else:
-            base = y.mean()
-        return np.full_like(y, fill_value=base, dtype=np.float64)
+            return y.mean()
 
     def loss(self, y_true, y_pred, sample_weight=None) -> float:
         residual = y_true - y_pred
@@ -145,14 +159,18 @@ class QuantileLoss(Objective):
         """
         assert 0 < alpha < 1, "alpha must be in (0, 1)"
         self.alpha = alpha
-
+    
     def init_prediction(self, y, sample_weight=None):
         if sample_weight is None:
-            base = np.quantile(y, self.alpha)
+            return np.quantile(y, self.alpha)
         else:
-            # Weighted quantile is complex, use mean as approximation
-            base = np.average(y, weights=sample_weight)
-        return np.full_like(y, fill_value=base, dtype=np.float64)
+            order = np.argsort(y)
+            y_sorted = y[order]
+            weights_sorted = sample_weight[order]
+            cumulative = np.cumsum(weights_sorted)
+            cutoff = self.alpha * cumulative[-1]
+            idx = np.searchsorted(cumulative, cutoff, side="left")
+            return y_sorted[min(idx, len(y_sorted) - 1)]
 
     def loss(self, y_true, y_pred, sample_weight=None) -> float:
         residual = y_true - y_pred

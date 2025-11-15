@@ -7,13 +7,14 @@ class TestSquaredError:
     """Test suite for SquaredError objective"""
 
     def test_init_prediction(self):
-        """Test initial prediction returns mean"""
+        """Test initial prediction returns mean as a scalar"""
         y = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
         obj = SquaredError()
         init_pred = obj.init_prediction(y)
 
-        assert init_pred.shape == y.shape
-        assert np.allclose(init_pred, 3.0)  # Mean of y
+        # Should return a scalar, not an array
+        assert isinstance(init_pred, (float, np.floating))
+        assert np.isclose(init_pred, 3.0)  # Mean of y
 
     def test_init_prediction_with_weights(self):
         """Test initial prediction with sample weights"""
@@ -22,8 +23,10 @@ class TestSquaredError:
         obj = SquaredError()
         init_pred = obj.init_prediction(y, sample_weight=weights)
 
+        # Should return a scalar
+        assert isinstance(init_pred, (float, np.floating))
         # Weighted mean should be closer to 5.0
-        assert init_pred[0] > 3.0
+        assert init_pred > 3.0
 
     def test_loss(self):
         """Test loss computation"""

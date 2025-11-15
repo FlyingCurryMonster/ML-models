@@ -127,8 +127,11 @@ class GeneralizedGradBoostingRegressor(BaseEstimator, RegressorMixin):
 
         rng = np.random.default_rng(self.random_state)
         obj = self.objective
-        y_pred = obj.init_prediction(y, sample_weight=sample_weight)
-        self.init_ = y_pred
+        # Get scalar initial prediction
+        init_value = obj.init_prediction(y, sample_weight=sample_weight)
+        self.init_ = init_value
+        # Create array of predictions initialized to this constant value
+        y_pred = np.full_like(y, fill_value=init_value, dtype=np.float64)
         evals = []
 
 
